@@ -1,6 +1,6 @@
 __pycache__/
 *.pyc
-*.csv
+cleaned_output*.csv
 *.parquet
 *_log.txt
 config.json

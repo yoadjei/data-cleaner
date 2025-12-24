@@ -10,13 +10,18 @@ pip install -r requirements.txt
 
 ## Usage
 
-Run the script directly:
+Run the script with your data file:
 
 ```bash
-python data_cleaner.py
+python data_cleaner.py your_data.csv
 ```
 
-It will generate default configuration files (`config.json`, `config.yaml`) if they do not exist. You can edits these files to customize the cleaning rules.
+Example with test data:
+```bash
+python data_cleaner.py test_data.csv
+```
+
+It will generate default configuration files (`config.json`) if they do not exist. You can edit these files to customize the cleaning rules.
 
 ## Output
 

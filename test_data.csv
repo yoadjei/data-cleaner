@@ -1,0 +1,6 @@
+id,name,age,salary,dept
+1, Alice,25,5000,HR
+2,BOB,30,7000,IT
+2,bob,30,7000,IT
+4,Charlie ,,.
+5,  dave  ,35,6200,Sales

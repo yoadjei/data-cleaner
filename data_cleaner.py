@@ -206,74 +206,61 @@ class DataCleaningPipeline:
 
 # --- run it ---
 if __name__ == "__main__":
-    # config setup
-    config = {
-        "required_columns": ["id", "salary"],
-        "strategies": {
-            "name": {"normalize": True},
-            "age": {"convert_to": "float", "impute": "median"},
-            "salary": {"impute": "mean"},
-            "dept": {"impute": "mode"}
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(description="Data Cleaning Pipeline")
+    parser.add_argument("input_file", help="Path to the CSV file to clean")
+    parser.add_argument("--config", default="config.json", help="Path to configuration file (JSON/YAML)")
+    parser.add_argument("--output", default="cleaned_output", help="Output filename prefix")
+    
+    args = parser.parse_args()
+
+    # check if file exists
+    if not os.path.exists(args.input_file):
+        print(f"Error: Input file '{args.input_file}' not found.")
+        sys.exit(1)
+
+    # generate default config if missing
+    if not os.path.exists(args.config) and args.config == "config.json":
+        print("Config not found. Creating default 'config.json'...")
+        default_config = {
+            "required_columns": ["id", "salary"],
+            "strategies": {
+                "name": {"normalize": True},
+                "age": {"convert_to": "float", "impute": "median"},
+                "salary": {"impute": "mean"},
+                "dept": {"impute": "mode"}
+            }
         }
-    }
-    
-    if not os.path.exists("config.json"):
         with open("config.json", "w") as f:
-            json.dump(config, f, indent=2)
-        print("Created default config.json")
-    else:
-        print("Found existing config.json")
-    
-    # yaml example too
-    yaml_cfg = """required_columns:
-  - id
-  - salary
-
-strategies:
-  name:
-    normalize: true
-  age:
-    convert_to: float
-    impute: median
-  salary:
-    impute: mean
-  dept:
-    impute: mode
-"""
-    if not os.path.exists("config.yaml"):
-        with open("config.yaml", "w") as f:
-            f.write(yaml_cfg)
-        print("Created default config.yaml")
-    else:
-        print("Found existing config.yaml")
-
-    # test data with common issues
-    data = {
-        "id": [1, 2, 2, 4, 5],
-        "name": [" Alice", "BOB", "bob", "Charlie ", "  dave  "],
-        "age": ["25", "30", "30", None, "35"],
-        "salary": [5000, 7000, 7000, None, 6200],
-        "dept": ["HR", "IT", "IT", None, "Sales"]
-    }
-    df = pd.DataFrame(data)
-    
-    print("\nOriginal data:")
-    print(df)
+            json.dump(default_config, f, indent=2)
 
     # run pipeline
-    pipeline = DataCleaningPipeline("config.json")
-    
-    pipeline.analyze(df)
-    
-    if pipeline.validate(df):
-        cleaned = pipeline.run_cleaning(df)
+    print(f"Loading data from {args.input_file}...")
+    try:
+        if args.input_file.endswith('.csv'):
+            df = pd.read_csv(args.input_file)
+        elif args.input_file.endswith('.parquet'):
+            df = pd.read_parquet(args.input_file)
+        else:
+            # fallback/try csv
+            df = pd.read_csv(args.input_file)
+            
+        print("\nOriginal data:")
+        print(df.head())
+
+        pipeline = DataCleaningPipeline(args.config)
+        pipeline.analyze(df)
         
-        print("\nCleaned data:")
-        print(cleaned)
-        print("\nTypes:")
-        print(cleaned.dtypes)
-        
-        pipeline.export(cleaned, "cleaned_output")
-        print("\nDone!")
-    else:
-        print("\nCritical errors found - fix and rerun")
+        if pipeline.validate(df):
+            cleaned = pipeline.run_cleaning(df)
+            pipeline.export(cleaned, args.output)
+            print("\nDone!")
+        else:
+            print("\nCritical errors found - fix data and rerun")
+            sys.exit(1)
+            
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)
