@@ -1,6 +1,6 @@
 # Data Cleaning Pipeline
 
-A robust Python tool for automated data cleaning and validation. It handles common issues like missing values, duplicates, and type mismatches based on a configurable strategy.
+A Python tool for automated data cleaning and validation. It handles common issues like missing values, duplicates, and type mismatches based on a configurable strategy.
 
 ## Installation
 
