@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+cleaned_output*.csv
+*.parquet
+*_log.txt
+config.json
+config.yaml
