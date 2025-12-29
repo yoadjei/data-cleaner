@@ -1,0 +1,7 @@
+pandas
+numpy
+pyyaml
+pyarrow
+streamlit
+ydata-profiling
+scikit-learn
