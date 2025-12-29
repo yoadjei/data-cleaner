@@ -1,8 +1,3 @@
-"""
-Data Cleaner - Professional Web Interface
-Clean, modern UI with comprehensive error handling
-"""
-
 import streamlit as st
 import pandas as pd
 import numpy as np
